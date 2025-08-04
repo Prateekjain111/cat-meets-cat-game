@@ -320,4 +320,78 @@ body {
         font-size: 1em;
         min-width: 120px;
     }
+}
+
+/* Portrait mode optimization */
+@media (max-width: 768px) and (orientation: portrait) {
+    .game-container {
+        padding: 10px;
+        max-height: 100vh;
+    }
+    
+    .game-header {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.8em;
+        margin-bottom: 5px;
+    }
+    
+    .by-samaira {
+        font-size: 1em;
+    }
+    
+    .game-info {
+        font-size: 0.9em;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 8px;
+    }
+    
+    .pause-btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+        min-width: 100px;
+    }
+    
+    #gameCanvas {
+        max-height: 60vh;
+        max-width: 100%;
+    }
+    
+    .screen {
+        padding: 20px 15px;
+    }
+    
+    .screen h2 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+    
+    .screen p {
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+    
+    .btn {
+        padding: 15px 30px;
+        font-size: 1.2em;
+        min-height: 50px;
+    }
+    
+    .instructions {
+        font-size: 0.9em;
+    }
+    
+    .instructions h3 {
+        font-size: 1.1em;
+    }
+    
+    .instructions p {
+        font-size: 0.9em;
+        margin: 5px 0;
+    }
 } 

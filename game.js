@@ -41,6 +41,12 @@ class CatMeetsCatGame {
         this.floatingTexts = []; // For showing point amounts and damage
         this.blasts = []; // For blast graphics
         
+        // Mobile controls
+        this.targetX = this.canvas.width / 2; // Target position for smooth movement
+        this.isMobile = this.detectMobile();
+        this.touchActive = false;
+        this.lastTouchTime = 0;
+        
         // Game timers
         this.treatTimer = 0;
         this.catTimer = 0;
@@ -79,6 +85,12 @@ class CatMeetsCatGame {
         return false; // No new high score
     }
     
+    detectMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+               ('ontouchstart' in window) || 
+               (navigator.maxTouchPoints > 0);
+    }
+    
     bindEvents() {
         document.getElementById('startBtn').addEventListener('click', () => this.startGame());
         document.getElementById('restartBtn').addEventListener('click', () => this.restartGame());
@@ -107,16 +119,19 @@ class CatMeetsCatGame {
             }
         });
         
-        // Mobile touch controls - only move on drag/swipe
-        let isDragging = false;
-        let lastTouchX = 0;
-        
+        // Mobile touch controls - smooth movement
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            this.touchActive = true;
+            this.isMobile = true;
+            this.lastTouchTime = Date.now();
+            
             const touch = e.touches[0];
             const rect = this.canvas.getBoundingClientRect();
-            lastTouchX = touch.clientX - rect.left;
-            isDragging = false;
+            const touchX = touch.clientX - rect.left;
+            
+            // Set target position for smooth movement
+            this.targetX = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, touchX));
         });
         
         this.canvas.addEventListener('touchmove', (e) => {
@@ -125,21 +140,21 @@ class CatMeetsCatGame {
             
             const touch = e.touches[0];
             const rect = this.canvas.getBoundingClientRect();
-            const currentX = touch.clientX - rect.left;
+            const touchX = touch.clientX - rect.left;
             
-            // Only move if there's significant movement (drag/swipe)
-            const deltaX = Math.abs(currentX - lastTouchX);
-            if (deltaX > 5) { // Minimum movement threshold
-                isDragging = true;
-                this.playerCat.x = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, currentX));
-            }
-            
-            lastTouchX = currentX;
+            // Update target position for smooth movement
+            this.targetX = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, touchX));
         });
         
         this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
+            this.touchActive = false;
         });
+        
+        // Prevent zoom on double tap for mobile
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        }, { passive: false });
         
         // Mouse controls for desktop
         let isMouseDown = false;
@@ -240,13 +255,20 @@ class CatMeetsCatGame {
     updatePlayerCat() {
         if (this.gamePaused) return;
         
-        // Handle input
+        // Handle desktop keyboard input
         this.playerCat.velocityX = 0;
         if (this.keys.ArrowLeft) this.playerCat.velocityX = -this.playerCat.speed;
         if (this.keys.ArrowRight) this.playerCat.velocityX = this.playerCat.speed;
         
-        // Update position
+        // Update position for desktop
         this.playerCat.x += this.playerCat.velocityX;
+        
+        // Handle mobile smooth movement
+        if (this.isMobile && this.touchActive) {
+            // Smooth interpolation towards target position
+            const smoothingFactor = 0.15; // Adjust for smoother/faster movement
+            this.playerCat.x += (this.targetX - this.playerCat.x) * smoothingFactor;
+        }
         
         // Keep cat in bounds
         this.playerCat.x = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, this.playerCat.x));
@@ -602,6 +624,38 @@ class CatMeetsCatGame {
         // Draw tail
         this.ctx.fillStyle = '#FFA500';
         this.ctx.fillRect(this.playerCat.x + 20, this.playerCat.y + 10, 15, 5);
+        
+        // Draw direction line for mobile
+        if (this.isMobile && this.touchActive) {
+            this.drawDirectionLine();
+        }
+    }
+    
+    drawDirectionLine() {
+        // Draw a horizontal line below the cat for mobile guidance
+        const lineY = this.playerCat.y + this.playerCat.height + 10;
+        const lineWidth = 200;
+        const lineX = this.playerCat.x - lineWidth / 2;
+        
+        // Draw line background
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.fillRect(lineX, lineY, lineWidth, 4);
+        
+        // Draw line border
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(lineX, lineY, lineWidth, 4);
+        
+        // Draw arrow indicators
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this.ctx.font = '16px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('←', lineX + 20, lineY + 15);
+        this.ctx.fillText('→', lineX + lineWidth - 20, lineY + 15);
+        
+        // Draw center indicator
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        this.ctx.fillText('•', this.playerCat.x, lineY + 15);
     }
     
     drawTreats() {
