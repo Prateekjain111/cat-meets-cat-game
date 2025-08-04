@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐱 Cat Meets Cat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="title-section">
+                <h1>🐱 Cat Meets Cat</h1>
+                <p class="by-samaira">By Samaira Jain</p>
+            </div>
+            <div class="game-info">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="high-score">High Score: <span id="highScore">0</span></div>
+                <div class="level">Level: <span id="level">1</span></div>
+                <div class="lives">Lives: <span id="lives">3</span></div>
+                <div class="timer">Time: <span id="timer">3:00</span></div>
+                <button id="pauseBtn" class="pause-btn">⏸️ PAUSE</button>
+            </div>
+        </div>
+        
+        <div class="game-screen">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
+            <div id="startScreen" class="screen">
+                <p>Help the cute cat make friends with other cats!</p>
+                <button id="startBtn" class="btn">Start Game</button>
+                <div class="instructions">
+                    <h3>How to Play:</h3>
+                    <p>• Use ARROW KEYS to move your cat</p>
+                    <p>• Press SPACE to pause/unpause</p>
+                    <p>• Collect cat treats for points</p>
+                    <p>• Touch other cats to make friends</p>
+                    <p>• Avoid dogs and obstacles</p>
+                    <p>• Make as many cat friends as possible!</p>
+                    <p>• You have 3 minutes to get the highest score!</p>
+                    <div class="mobile-instructions">
+                        <h4>📱 Mobile Controls:</h4>
+                        <p>• Drag left and right to move cat</p>
+                        <p>• Tap PAUSE button to pause</p>
+                        <p>• Just catch treats and cats!</p>
+                    </div>
+                </div>
+                <div class="credits">
+                    <p>Created by <strong>Samaira Jain</strong> 🎮</p>
+                </div>
+            </div>
+            
+            <div id="gameOverScreen" class="screen hidden">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <p id="highScoreMessage" class="high-score-message hidden">🎉 NEW HIGH SCORE! 🎉</p>
+                <p>Level Reached: <span id="finalLevel">1</span></p>
+                <p>Time Remaining: <span id="finalTime">0:00</span></p>
+                <button id="restartBtn" class="btn">Play Again</button>
+                <div class="credits">
+                    <p>Created by <strong>Samaira Jain</strong> 🎮</p>
+                </div>
+            </div>
+            
+            <div id="pauseScreen" class="screen hidden">
+                <h2>⏸️ Game Paused</h2>
+                <p>Press SPACE or click PAUSE to resume</p>
+                <button id="resumeBtn" class="btn">Resume Game</button>
+                <div class="credits">
+                    <p>Created by <strong>Samaira Jain</strong> 🎮</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html> 

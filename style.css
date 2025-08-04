@@ -1,0 +1,323 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+/* Game container */
+.game-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Game header */
+.game-header {
+    text-align: center;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.title-section {
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    margin: 0 0 5px 0;
+    color: #ffffff;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.by-samaira {
+    font-size: 1.1em;
+    color: #ffa500;
+    margin: 0;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 1.2em;
+    color: #ffffff;
+    font-weight: bold;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.high-score {
+    color: #ffd700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.high-score-message {
+    color: #ffd700;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Pause button */
+.pause-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    min-width: 100px;
+}
+
+.pause-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pause-btn:active {
+    transform: translateY(0);
+}
+
+.pause-btn.paused {
+    background: linear-gradient(135deg, #ffa502, #ff6b6b);
+}
+
+/* Game screen */
+.game-screen {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+#gameCanvas {
+    border: 3px solid #ffffff;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    border-radius: 15px;
+    padding: 40px;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.screen h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.screen p {
+    font-size: 1.2em;
+    margin: 10px 0;
+    color: #e0e0e0;
+}
+
+/* Buttons */
+.btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Instructions */
+.instructions {
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    max-width: 500px;
+}
+
+.instructions h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
+.instructions p {
+    margin: 8px 0;
+    font-size: 1em;
+    color: #e0e0e0;
+}
+
+.mobile-instructions {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid #ffd700;
+}
+
+.mobile-instructions h4 {
+    margin: 0 0 8px 0;
+    color: #ffd700;
+    font-size: 1em;
+}
+
+.mobile-instructions p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #e0e0e0;
+}
+
+.by-prateek {
+    font-size: 1.2em;
+    color: #ffa500;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Credits */
+.credits {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    font-size: 0.9em;
+    color: #e0e0e0;
+}
+
+/* Landscape mode for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .game-container {
+        max-height: 100vh;
+        margin: 5px;
+    }
+    
+    .game-header {
+        padding: 10px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+    
+    .by-samaira {
+        font-size: 0.9em;
+    }
+    
+    .game-info {
+        font-size: 0.8em;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    
+    .pause-btn {
+        padding: 6px 12px;
+        font-size: 0.8em;
+        min-width: 80px;
+    }
+    
+    #gameCanvas {
+        max-height: 70vh;
+    }
+}
+
+/* Touch-friendly controls */
+@media (max-width: 768px) {
+    .btn {
+        padding: 20px 40px;
+        font-size: 1.4em;
+        min-height: 60px;
+    }
+    
+    .screen {
+        padding: 15px;
+    }
+    
+    .screen h2 {
+        font-size: 2em;
+    }
+    
+    .screen p {
+        font-size: 1.1em;
+    }
+    
+    .game-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .pause-btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        min-width: 120px;
+    }
+} 
