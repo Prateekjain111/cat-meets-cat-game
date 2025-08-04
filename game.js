@@ -54,11 +54,9 @@ class CatMeetsCatGame {
         
         // Treat types with different points
         this.treatTypes = [
-            { emoji: '🐟', color: '#87CEEB', points: 50 },   // Fish
-            { emoji: '🥛', color: '#FFFFFF', points: 100 },  // Milk
-            { emoji: '🍖', color: '#FFB6C1', points: 75 },   // Meat
-            { emoji: '🧀', color: '#FFD700', points: 150 },  // Cheese
-            { emoji: '🍣', color: '#FF6B6B', points: 125 }   // Sushi
+            { emoji: '🥛', color: '#FFFFFF', points: 75 },   // Milk
+            { emoji: '🍕', color: '#FF6B6B', points: 50 },   // Pizza
+            { emoji: '🍔', color: '#FFD700', points: 25 }    // Burger
         ];
         
         this.init();
@@ -130,8 +128,16 @@ class CatMeetsCatGame {
             const rect = this.canvas.getBoundingClientRect();
             const touchX = touch.clientX - rect.left;
             
-            // Set target position for smooth movement
-            this.targetX = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, touchX));
+            // Convert touch coordinates to canvas coordinates
+            const scaleX = this.canvas.width / rect.width;
+            const canvasTouchX = touchX * scaleX;
+            
+            // Set target position for smooth movement - ensure full range
+            const canvasWidth = this.canvas.width;
+            const catHalfWidth = this.playerCat.width / 2;
+            this.targetX = Math.max(catHalfWidth, Math.min(canvasWidth - catHalfWidth, canvasTouchX));
+            
+
         });
         
         this.canvas.addEventListener('touchmove', (e) => {
@@ -142,8 +148,16 @@ class CatMeetsCatGame {
             const rect = this.canvas.getBoundingClientRect();
             const touchX = touch.clientX - rect.left;
             
-            // Update target position for smooth movement
-            this.targetX = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, touchX));
+            // Convert touch coordinates to canvas coordinates
+            const scaleX = this.canvas.width / rect.width;
+            const canvasTouchX = touchX * scaleX;
+            
+            // Update target position for smooth movement - ensure full range
+            const canvasWidth = this.canvas.width;
+            const catHalfWidth = this.playerCat.width / 2;
+            this.targetX = Math.max(catHalfWidth, Math.min(canvasWidth - catHalfWidth, canvasTouchX));
+            
+
         });
         
         this.canvas.addEventListener('touchend', (e) => {
@@ -266,11 +280,11 @@ class CatMeetsCatGame {
         // Handle mobile smooth movement
         if (this.isMobile && this.touchActive) {
             // Smooth interpolation towards target position
-            const smoothingFactor = 0.15; // Adjust for smoother/faster movement
+            const smoothingFactor = 0.25; // Increased for more responsive movement
             this.playerCat.x += (this.targetX - this.playerCat.x) * smoothingFactor;
         }
         
-        // Keep cat in bounds
+        // Keep cat in bounds - allow full movement across canvas
         this.playerCat.x = Math.max(this.playerCat.width/2, Math.min(this.canvas.width - this.playerCat.width/2, this.playerCat.x));
     }
     
@@ -290,7 +304,9 @@ class CatMeetsCatGame {
     }
     
     getDifficultyMultiplier() {
-        return 1 + (this.level - 1) * 0.3; // 30% increase per level
+        const baseMultiplier = 1 + (this.level - 1) * 0.3; // 30% increase per level
+        // Slightly faster on mobile to compensate for touch input lag, slower on desktop
+        return this.isMobile ? baseMultiplier * 1.1 : baseMultiplier * 0.7;
     }
     
     createFloatingText(x, y, text, color, isPositive = true) {
@@ -365,16 +381,10 @@ class CatMeetsCatGame {
     drawBlasts() {
         for (const blast of this.blasts) {
             this.ctx.globalAlpha = blast.life / 30;
-            this.ctx.fillStyle = blast.color;
-            this.ctx.beginPath();
-            this.ctx.arc(blast.x, blast.y, blast.radius, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            // Draw inner blast
-            this.ctx.fillStyle = '#FFD700';
-            this.ctx.beginPath();
-            this.ctx.arc(blast.x, blast.y, blast.radius * 0.6, 0, Math.PI * 2);
-            this.ctx.fill();
+            this.ctx.font = '60px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('💥', blast.x, blast.y);
         }
         this.ctx.globalAlpha = 1;
     }
@@ -383,7 +393,8 @@ class CatMeetsCatGame {
         if (this.gamePaused) return;
         
         this.treatTimer++;
-        const spawnRate = Math.max(60, 120 - (this.level - 1) * 10); // Faster spawning with level
+        const baseSpawnRate = Math.max(60, 120 - (this.level - 1) * 10); // Faster spawning with level
+        const spawnRate = this.isMobile ? baseSpawnRate * 0.9 : baseSpawnRate * 1.3; // 10% faster on mobile, 30% slower on desktop
         if (this.treatTimer > spawnRate) {
             const treatType = this.treatTypes[Math.floor(Math.random() * this.treatTypes.length)];
             const treat = {
@@ -391,7 +402,7 @@ class CatMeetsCatGame {
                 y: -20,
                 width: 20,
                 height: 20,
-                speed: 2 + (this.level - 1) * 0.5, // Faster falling with level
+                speed: (2 + (this.level - 1) * 0.5) * (this.isMobile ? 1.1 : 0.7), // 10% faster on mobile, 30% slower on desktop
                 type: treatType
             };
             this.treats.push(treat);
@@ -427,14 +438,15 @@ class CatMeetsCatGame {
         if (this.gamePaused) return;
         
         this.catTimer++;
-        const spawnRate = Math.max(120, 180 - (this.level - 1) * 15); // Faster spawning with level
+        const baseSpawnRate = Math.max(120, 180 - (this.level - 1) * 15); // Faster spawning with level
+        const spawnRate = this.isMobile ? baseSpawnRate * 0.9 : baseSpawnRate * 1.3; // 10% faster on mobile, 30% slower on desktop
         if (this.catTimer > spawnRate) {
             const otherCat = {
                 x: Math.random() * (this.canvas.width - 30),
                 y: -30,
                 width: 30,
                 height: 40,
-                speed: 3 + (this.level - 1) * 0.3 // Faster movement with level
+                speed: (3 + (this.level - 1) * 0.3) * (this.isMobile ? 1.1 : 0.7) // 10% faster on mobile, 30% slower on desktop
             };
             this.otherCats.push(otherCat);
             this.catTimer = 0;
@@ -472,7 +484,8 @@ class CatMeetsCatGame {
         // Increase dog spawn rate significantly with level
         const baseSpawnRate = 240; // 4 seconds base
         const levelReduction = (this.level - 1) * 30; // 30 frames faster per level
-        const spawnRate = Math.max(60, baseSpawnRate - levelReduction); // Minimum 1 second
+        const baseSpawnRateAdjusted = Math.max(60, baseSpawnRate - levelReduction); // Minimum 1 second
+        const spawnRate = this.isMobile ? baseSpawnRateAdjusted * 0.9 : baseSpawnRateAdjusted * 1.3; // 10% faster on mobile, 30% slower on desktop
         
         if (this.dogTimer > spawnRate) {
             // Spawn multiple dogs at higher levels
@@ -484,7 +497,7 @@ class CatMeetsCatGame {
                     y: -25 - (j * 20), // Stagger the dogs vertically
                     width: 25,
                     height: 35,
-                    speed: 4 + (this.level - 1) * 0.4 // Faster dogs with level
+                    speed: (4 + (this.level - 1) * 0.4) * (this.isMobile ? 1.1 : 0.7) // 10% faster on mobile, 30% slower on desktop
                 };
                 this.dogs.push(dog);
             }
@@ -573,20 +586,23 @@ class CatMeetsCatGame {
         levelUpDiv.style.top = '50%';
         levelUpDiv.style.left = '50%';
         levelUpDiv.style.transform = 'translate(-50%, -50%)';
-        levelUpDiv.style.background = 'rgba(255, 107, 107, 0.9)';
+        levelUpDiv.style.background = 'rgba(255, 215, 0, 0.2)';
         levelUpDiv.style.color = 'white';
-        levelUpDiv.style.padding = '20px';
-        levelUpDiv.style.borderRadius = '10px';
-        levelUpDiv.style.fontSize = '24px';
+        levelUpDiv.style.padding = this.isMobile ? '10px 20px' : '15px 30px';
+        levelUpDiv.style.borderRadius = '15px';
+        levelUpDiv.style.fontSize = this.isMobile ? '1.2em' : '1.5em';
         levelUpDiv.style.fontWeight = 'bold';
         levelUpDiv.style.zIndex = '1000';
-        levelUpDiv.textContent = `Level ${this.level}!`;
+        levelUpDiv.style.border = '1px solid rgba(255, 255, 255, 0.4)';
+        levelUpDiv.style.textShadow = '1px 1px 2px rgba(0, 0, 0, 0.8)';
+        levelUpDiv.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+        levelUpDiv.textContent = `🎉 LEVEL ${this.level} 🎉`;
         
         document.body.appendChild(levelUpDiv);
         
         setTimeout(() => {
             document.body.removeChild(levelUpDiv);
-        }, 2000);
+        }, 1200);
     }
     
     formatTime(seconds) {
@@ -596,34 +612,11 @@ class CatMeetsCatGame {
     }
     
     drawPlayerCat() {
-        // Draw cat body (orange)
-        this.ctx.fillStyle = '#FFA500';
-        this.ctx.fillRect(this.playerCat.x - this.playerCat.width/2, this.playerCat.y, this.playerCat.width, this.playerCat.height);
-        
-        // Draw cat head (lighter orange)
-        this.ctx.fillStyle = '#FFB84D';
-        this.ctx.fillRect(this.playerCat.x - 15, this.playerCat.y - 10, 30, 25);
-        
-        // Draw eyes (green with black pupils)
-        this.ctx.fillStyle = '#90EE90';
-        this.ctx.fillRect(this.playerCat.x - 8, this.playerCat.y - 5, 6, 8);
-        this.ctx.fillRect(this.playerCat.x + 2, this.playerCat.y - 5, 6, 8);
-        
-        // Draw pupils
-        this.ctx.fillStyle = '#000000';
-        this.ctx.fillRect(this.playerCat.x - 6, this.playerCat.y - 3, 2, 4);
-        this.ctx.fillRect(this.playerCat.x + 4, this.playerCat.y - 3, 2, 4);
-        
-        // Draw ears
-        this.ctx.fillStyle = '#FFA500';
-        this.ctx.beginPath();
-        this.ctx.arc(this.playerCat.x - 12, this.playerCat.y - 15, 8, 0, Math.PI * 2);
-        this.ctx.arc(this.playerCat.x + 12, this.playerCat.y - 15, 8, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        // Draw tail
-        this.ctx.fillStyle = '#FFA500';
-        this.ctx.fillRect(this.playerCat.x + 20, this.playerCat.y + 10, 15, 5);
+        // Draw cute cat using emoji - larger size
+        this.ctx.font = '60px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('🐱', this.playerCat.x, this.playerCat.y + this.playerCat.height/2);
         
         // Draw direction line for mobile
         if (this.isMobile && this.touchActive) {
@@ -634,74 +627,61 @@ class CatMeetsCatGame {
     drawDirectionLine() {
         // Draw a horizontal line below the cat for mobile guidance
         const lineY = this.playerCat.y + this.playerCat.height + 10;
-        const lineWidth = 200;
+        const lineWidth = 300; // Wider line to show full movement range
         const lineX = this.playerCat.x - lineWidth / 2;
+        
+        // Ensure line doesn't go outside canvas bounds
+        const adjustedLineX = Math.max(0, Math.min(this.canvas.width - lineWidth, lineX));
         
         // Draw line background
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        this.ctx.fillRect(lineX, lineY, lineWidth, 4);
+        this.ctx.fillRect(adjustedLineX, lineY, lineWidth, 4);
         
         // Draw line border
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
         this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(lineX, lineY, lineWidth, 4);
+        this.ctx.strokeRect(adjustedLineX, lineY, lineWidth, 4);
         
         // Draw arrow indicators
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         this.ctx.font = '16px Arial';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('←', lineX + 20, lineY + 15);
-        this.ctx.fillText('→', lineX + lineWidth - 20, lineY + 15);
+        this.ctx.fillText('←', adjustedLineX + 20, lineY + 15);
+        this.ctx.fillText('→', adjustedLineX + lineWidth - 20, lineY + 15);
         
         // Draw center indicator
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         this.ctx.fillText('•', this.playerCat.x, lineY + 15);
     }
     
+
+    
     drawTreats() {
         for (const treat of this.treats) {
-            // Draw treat emoji
-            this.ctx.font = '20px Arial';
+            // Draw treat emoji - larger size to match cats and dogs
+            this.ctx.font = '50px Arial';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText(treat.type.emoji, treat.x + treat.width/2, treat.y + treat.height/2 + 5);
+            this.ctx.fillText(treat.type.emoji, treat.x + treat.width/2, treat.y + treat.height/2);
         }
     }
     
     drawOtherCats() {
-        this.ctx.fillStyle = '#FFB6C1';
         for (const otherCat of this.otherCats) {
-            // Draw other cat body
-            this.ctx.fillRect(otherCat.x, otherCat.y, otherCat.width, otherCat.height);
-            
-            // Draw head
-            this.ctx.fillStyle = '#FFC0CB';
-            this.ctx.fillRect(otherCat.x + 5, otherCat.y - 10, 20, 20);
-            
-            // Draw eyes
-            this.ctx.fillStyle = '#000000';
-            this.ctx.fillRect(otherCat.x + 8, otherCat.y - 5, 3, 3);
-            this.ctx.fillRect(otherCat.x + 15, otherCat.y - 5, 3, 3);
-            
-            this.ctx.fillStyle = '#FFB6C1';
+            // Draw cute friend cats using same emoji as player cat but larger
+            this.ctx.font = '60px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('🐱', otherCat.x + otherCat.width/2, otherCat.y + otherCat.height/2);
         }
     }
     
     drawDogs() {
-        this.ctx.fillStyle = '#8B4513';
         for (const dog of this.dogs) {
-            // Draw dog body
-            this.ctx.fillRect(dog.x, dog.y, dog.width, dog.height);
-            
-            // Draw head
-            this.ctx.fillStyle = '#DEB887';
-            this.ctx.fillRect(dog.x + 5, dog.y - 10, 15, 15);
-            
-            // Draw ears
-            this.ctx.fillStyle = '#8B4513';
-            this.ctx.fillRect(dog.x + 3, dog.y - 15, 5, 8);
-            this.ctx.fillRect(dog.x + 12, dog.y - 15, 5, 8);
-            
-            this.ctx.fillStyle = '#8B4513';
+            // Draw brown dog face emoji - larger and clearer
+            this.ctx.font = '60px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('🐶', dog.x + dog.width/2, dog.y + dog.height/2);
         }
     }
     
@@ -728,11 +708,16 @@ class CatMeetsCatGame {
             this.ctx.fillRect(x, 50, 60, 80);
         }
         
-        // Draw some furniture
+        // Draw some furniture - evenly spaced platforms
         this.ctx.fillStyle = '#8B4513';
-        for (let i = 0; i < 4; i++) {
-            const x = (i * 150) % this.canvas.width;
-            this.ctx.fillRect(x, this.canvas.height - 40, 80, 40);
+        const platformWidth = 100;
+        const platformHeight = 40;
+        const totalPlatforms = 6;
+        const spacing = (this.canvas.width - (totalPlatforms * platformWidth)) / (totalPlatforms + 1);
+        
+        for (let i = 0; i < totalPlatforms; i++) {
+            const x = spacing + (i * (platformWidth + spacing));
+            this.ctx.fillRect(x, this.canvas.height - platformHeight, platformWidth, platformHeight);
         }
     }
     

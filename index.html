@@ -21,28 +21,36 @@
                 <div class="timer">Time: <span id="timer">3:00</span></div>
                 <button id="pauseBtn" class="pause-btn">⏸️ PAUSE</button>
             </div>
+            <div class="points-guide">
+                <span>🐱 100pts</span>
+                <span>🥛 75pts</span>
+                <span>🍕 50pts</span>
+                <span>🍔 25pts</span>
+            </div>
         </div>
         
         <div class="game-screen">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <canvas id="gameCanvas" width="600" height="400"></canvas>
             
             <div id="startScreen" class="screen">
                 <p>Help the cute cat make friends with other cats!</p>
                 <button id="startBtn" class="btn">Start Game</button>
                 <div class="instructions">
                     <h3>How to Play:</h3>
-                    <p>• Use ARROW KEYS to move your cat</p>
-                    <p>• Press SPACE to pause/unpause</p>
                     <p>• Collect cat treats for points</p>
                     <p>• Touch other cats to make friends</p>
                     <p>• Avoid dogs and obstacles</p>
                     <p>• Make as many cat friends as possible!</p>
                     <p>• You have 3 minutes to get the highest score!</p>
-                    <div class="mobile-instructions">
+                    <div class="desktop-controls">
+                        <h4>🖥️ Desktop Controls:</h4>
+                        <p>• Use ARROW KEYS to move your cat</p>
+                        <p>• Press SPACE to pause/unpause</p>
+                    </div>
+                    <div class="mobile-controls">
                         <h4>📱 Mobile Controls:</h4>
                         <p>• Drag left and right to move cat</p>
                         <p>• Tap PAUSE button to pause</p>
-                        <p>• Just catch treats and cats!</p>
                     </div>
                 </div>
                 <div class="credits">
