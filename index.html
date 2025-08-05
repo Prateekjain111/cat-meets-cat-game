@@ -8,9 +8,10 @@
 </head>
 <body>
     <div class="game-container">
-        <div class="game-header">
+                <div class="game-header">
             <div class="title-section">
                 <h1>🐱 Cat Meets Cat</h1>
+                <p class="game-description">Help the cute cat make friends with other cats!</p>
                 <p class="by-samaira">By Samaira Jain</p>
             </div>
             <div class="game-info">
@@ -21,20 +22,18 @@
                 <div class="timer">Time: <span id="timer">3:00</span></div>
                 <button id="pauseBtn" class="pause-btn">⏸️ PAUSE</button>
             </div>
-            <div class="points-guide">
+        </div>
+        
+        <div class="game-screen">
+            <canvas id="gameCanvas" width="600" height="400"></canvas>
+            <div id="gamePointsGuide" class="points-guide game-only">
                 <span>🐱 100pts</span>
                 <span>🥛 75pts</span>
                 <span>🍕 50pts</span>
                 <span>🍔 25pts</span>
             </div>
-        </div>
-        
-        <div class="game-screen">
-            <canvas id="gameCanvas" width="600" height="400"></canvas>
             
             <div id="startScreen" class="screen">
-                <p>Help the cute cat make friends with other cats!</p>
-                <button id="startBtn" class="btn">Start Game</button>
                 <div class="instructions">
                     <h3>How to Play:</h3>
                     <p>• Collect cat treats for points</p>
@@ -53,6 +52,7 @@
                         <p>• Tap PAUSE button to pause</p>
                     </div>
                 </div>
+                <button id="startBtn" class="btn">Start Game</button>
                 <div class="credits">
                     <p>Created by <strong>Samaira Jain</strong> 🎮</p>
                 </div>

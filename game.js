@@ -206,15 +206,18 @@ class CatMeetsCatGame {
         this.gamePaused = !this.gamePaused;
         const pauseBtn = document.getElementById('pauseBtn');
         const pauseScreen = document.getElementById('pauseScreen');
+        const pointsGuide = document.getElementById('gamePointsGuide');
         
         if (this.gamePaused) {
             pauseBtn.textContent = '▶️ RESUME';
             pauseBtn.classList.add('paused');
             pauseScreen.classList.remove('hidden');
+            pointsGuide.classList.remove('show');
         } else {
             pauseBtn.textContent = '⏸️ PAUSE';
             pauseBtn.classList.remove('paused');
             pauseScreen.classList.add('hidden');
+            pointsGuide.classList.add('show');
         }
     }
     
@@ -246,6 +249,9 @@ class CatMeetsCatGame {
         document.getElementById('startScreen').classList.add('hidden');
         document.getElementById('gameOverScreen').classList.add('hidden');
         document.getElementById('pauseScreen').classList.add('hidden');
+        
+        // Show points guide during gameplay
+        document.getElementById('gamePointsGuide').classList.add('show');
         
         this.updateUI();
         console.log('Starting game loop...');
@@ -463,10 +469,10 @@ class CatMeetsCatGame {
             // Check collision with player cat
             if (this.checkCollision(this.playerCat, otherCat)) {
                 this.otherCats.splice(i, 1);
-                this.score += 200; // Direct cat friendship!
+                this.score += 100; // Direct cat friendship!
                 this.updateUI(); // Update UI immediately
                 this.createParticles(otherCat.x + otherCat.width/2, otherCat.y + otherCat.height/2, '#FFB6C1');
-                this.createFloatingText(otherCat.x + otherCat.width/2, otherCat.y, '+200', '#FF69B4', true);
+                this.createFloatingText(otherCat.x + otherCat.width/2, otherCat.y, '+100', '#FF69B4', true);
                 continue;
             }
             
@@ -778,6 +784,9 @@ class CatMeetsCatGame {
     gameOver() {
         this.gameRunning = false;
         this.gamePaused = false;
+        
+        // Hide points guide
+        document.getElementById('gamePointsGuide').classList.remove('show');
         
         // Check for new high score
         const isNewHighScore = this.saveHighScore();
